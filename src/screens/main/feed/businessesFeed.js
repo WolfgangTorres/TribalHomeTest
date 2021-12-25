@@ -5,7 +5,7 @@ import { useBusinesses, useDeleteBusiness } from '../../../hooks';
 import { BusinessItem, EmptyBusinessesListPlaceholder } from '../../../components/feed';
 import { PlusButton, LoadingIndicator, ErrorPlaceholder } from '../../../components/general';
 
-const BusinessesFeed = () => {
+const BusinessesFeed = ({ navigation }) => {
     const deleteMutation = useDeleteBusiness();
 
     const {
@@ -33,8 +33,8 @@ const BusinessesFeed = () => {
         />
     );
 
-    const navigateToBusinessForm = () => {
-        console.log;
+    const navigateToAddBusinessForm = () => {
+        navigation.navigate('AddBusinessForm');
     };
 
     const onRefresh = () => {
@@ -93,7 +93,7 @@ const BusinessesFeed = () => {
                 onRefresh={onRefresh}
                 ListEmptyComponent={<EmptyBusinessesListPlaceholder />}
             />
-            <PlusButton action={navigateToBusinessForm} />
+            <PlusButton action={navigateToAddBusinessForm} />
         </SafeAreaView>
     );
 }
@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default BusinessesFeed
+export default BusinessesFeed;
