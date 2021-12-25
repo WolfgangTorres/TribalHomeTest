@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux'
-import { getBusinesses, resetBusinessesState, deleteBusiness } from '../../../redux/actions'
+import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, Alert } from 'react-native';
 
+import { useBusinesses, useDeleteBusiness } from '../../../hooks';
 import { BusinessItem, EmptyBusinessesListPlaceholder } from '../../../components/feed';
 import { PlusButton, LoadingIndicator, ErrorPlaceholder } from '../../../components/general';
 
 const BusinessesFeed = () => {
-    const dispatch = useDispatch()
+    const deleteMutation = useDeleteBusiness();
 
-    const { loading, error, businesses } = useSelector(state => state.businesses)
+    const {
+        data,
+        error,
+        refetch,
+        isLoading,
+        isSuccess,
+        isFetching
+    } = useBusinesses();
+
+    const {
+        isError: mutationIsError,
+        error: mutationError
+    } = deleteMutation;
 
     const [refreshing, setRefreshing] = useState(false);
 
@@ -28,39 +39,43 @@ const BusinessesFeed = () => {
 
     const onRefresh = () => {
         setRefreshing(true);
-        _getBusinesses();
+        refetch();
     };
 
     const deleteItem = ({ item, index }) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        dispatch(deleteBusiness({ id: item.businessId }))
+        deleteMutation.mutate(item.businessId);
     };
 
     const retryAction = () => {
-        dispatch(resetBusinessesState({ getValues: true }));
-    };
-
-    const _getBusinesses = () => {
-        dispatch(getBusinesses());
+        refetch();
     };
 
     useEffect(() => {
-        _getBusinesses();
-    }, [dispatch])
+        if (mutationIsError) {
+            Alert.alert(
+                "Deleting Business Error",
+                `${mutationError.message}`,
+                [
+                    { text: "OK" }
+                ]
+            );
+        }
+    }, [mutationIsError, mutationError]);
 
     useEffect(() => {
-        if (refreshing) {
+        if (refreshing && !isFetching) {
             setRefreshing(false);
         }
-    }, [businesses]);
+    }, [isFetching]);
 
-    if (loading) {
+    if (isLoading) {
         return <LoadingIndicator />
     }
 
-    if (error !== undefined) {
+    if (!isSuccess) {
         return <ErrorPlaceholder
-            error={`Error: ${error?.data?.message}`}
+            error={`Error: ${error.message}`}
             retryAction={retryAction}
         />
     }
@@ -72,7 +87,7 @@ const BusinessesFeed = () => {
                 style={styles.list}
                 refreshing={refreshing}
                 showsVerticalScrollIndicator={true}
-                data={businesses}
+                data={data?.businesses}
                 renderItem={(values) => renderItem(values, () => { deleteItem(values) })}
                 keyExtractor={keyExtractor}
                 onRefresh={onRefresh}
