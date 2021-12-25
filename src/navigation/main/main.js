@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import BusinessesFeed from '../../screens/main/feed/businessesFeed';
 import AddBusinessForm from '../../screens/main/businessForm/addBusinessForm';
+import BusinessDetails from '../../screens/main/businessDetails/businessDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,10 @@ const MainStack = () => {
                 name='AddBusinessForm'
                 component={AddBusinessForm}
                 options={{ title: 'Add business' }}
+            />
+            <Stack.Screen
+                name='BusinessDetails'
+                component={BusinessDetails}
             />
         </Stack.Navigator>
     );
