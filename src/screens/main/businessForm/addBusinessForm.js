@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { StyleSheet, SafeAreaView, TextInput, View, Alert } from 'react-native';
 
 import { Button } from '../../../components/general';
-import { useCreateBusiness } from '../../../hooks';
+import { useCreateBusiness, useUpdateBusiness } from '../../../hooks/addBusinessForm';
+import { useDeleteBusiness } from '../../../hooks/businesses';
 
 const AddBusinessForm = ({ route, navigation }) => {
     const business = route?.params?.business;
 
+    const deleteMutation = useDeleteBusiness();
+    const updateMutation = useUpdateBusiness();
     const createMutation = useCreateBusiness();
 
     const {
@@ -16,7 +19,24 @@ const AddBusinessForm = ({ route, navigation }) => {
         error: createMutationError
     } = createMutation;
 
-    const [text, onChangeText] = useState(undefined);
+    const {
+        isSuccess: updateMutationIsSuccess,
+        isLoading: updateMutationIsLoading,
+        isError: updateMutationIsError,
+        error: updateMutationError
+    } = updateMutation;
+
+    const {
+        isSuccess: deleteMutatioIsSuccess,
+        isError: deleteMutationIsError,
+        error: deleteMutationError
+    } = deleteMutation;
+
+    const [text, onChangeText] = useState(business?.name || undefined);
+
+    const createUpdateButtonTitle = useMemo(() => {
+        return business !== undefined ? 'Update business' : 'Create business';
+    }, [business])
 
     const deleteBusiness = () => {
         Alert.alert(
@@ -29,7 +49,7 @@ const AddBusinessForm = ({ route, navigation }) => {
                 },
                 {
                     text: 'Delete',
-                    onPress: () => console.log("Delete Pressed")
+                    onPress: () => deleteMutation.mutate(business?.businessId)
                 }
             ]
         );
@@ -49,6 +69,44 @@ const AddBusinessForm = ({ route, navigation }) => {
         }
     };
 
+    const updateAction = () => {
+        if (!!text) {
+            updateMutation.mutate({ businessId: business?.businessId, name: text });
+        } else {
+            Alert.alert(
+                'Empty field',
+                'Please enter a name',
+                [
+                    { text: 'OK' }
+                ]
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (deleteMutationIsError) {
+            Alert.alert(
+                "Deleting Business Error",
+                `${deleteMutationError.message}`,
+                [
+                    { text: "OK" }
+                ]
+            );
+        }
+    }, [deleteMutationIsError, deleteMutationError]);
+
+    useEffect(() => {
+        if (updateMutationIsError) {
+            Alert.alert(
+                "Updating Business Error",
+                `${updateMutationError.message}`,
+                [
+                    { text: "OK" }
+                ]
+            );
+        }
+    }, [updateMutationIsError, updateMutationError]);
+
     useEffect(() => {
         if (createMutationIsError) {
             Alert.alert(
@@ -60,6 +118,30 @@ const AddBusinessForm = ({ route, navigation }) => {
             );
         }
     }, [createMutationIsError, createMutationError]);
+
+    useEffect(() => {
+        if (deleteMutatioIsSuccess) {
+            Alert.alert(
+                'Deleting Business Success',
+                undefined,
+                [
+                    { text: 'OK', onPress: () => navigation.navigate('BusinessesFeed') }
+                ]
+            );
+        }
+    }, [deleteMutatioIsSuccess])
+
+    useEffect(() => {
+        if (updateMutationIsSuccess) {
+            Alert.alert(
+                'Updating Business Success',
+                undefined,
+                [
+                    { text: 'OK', onPress: () => navigation.navigate('BusinessDetails', { business: { ...business, name: text } }) }
+                ]
+            );
+        }
+    }, [updateMutationIsSuccess])
 
     useEffect(() => {
         if (isSuccess) {
@@ -91,9 +173,9 @@ const AddBusinessForm = ({ route, navigation }) => {
                 />
             )}
             <Button
-                title='Create business'
+                title={createUpdateButtonTitle}
                 backgroundColor='blue'
-                action={createAction}
+                action={business !== undefined ? updateAction : createAction}
             />
         </SafeAreaView>
     );

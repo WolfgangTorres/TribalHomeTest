@@ -1,20 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useAxios } from '../../src/services';
+import { useAxios } from '../../services';
 
-const deleteBusiness = async (businessId) => {
+const createBusiness = async (businessName) => {
     const result = await useAxios({
-        method: 'delete',
-        url: `/business/${businessId}`,
+        method: 'post',
+        url: `/business`,
+        data: { name: businessName },
     });
 
     return result;
 };
 
-export const useDeleteBusiness = () => {
+export const useCreateBusiness = () => {
     const queryClient = useQueryClient();
 
     return useMutation(
-        (businessId) => deleteBusiness(businessId),
+        (businessName) => createBusiness(businessName),
         {
             onSuccess: (data, variables, context) => {
                 queryClient.invalidateQueries()

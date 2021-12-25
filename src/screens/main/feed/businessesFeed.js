@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, Alert, TouchableOpacity } from 'react-native';
 
-import { useBusinesses, useDeleteBusiness } from '../../../hooks';
-import { BusinessItem, EmptyBusinessesListPlaceholder } from '../../../components/feed';
-import { PlusButton, LoadingIndicator, ErrorPlaceholder } from '../../../components/general';
+import { useBusinesses, useDeleteBusiness } from '../../../hooks/businesses';
+import { BusinessItem } from '../../../components/feed';
+import { PlusButton, LoadingIndicator, ErrorPlaceholder, EmptyListPlaceholder } from '../../../components/general';
 
 const BusinessesFeed = ({ navigation }) => {
     const deleteMutation = useDeleteBusiness();
@@ -24,18 +24,24 @@ const BusinessesFeed = ({ navigation }) => {
 
     const [refreshing, setRefreshing] = useState(false);
 
-    const keyExtractor = item => item.businessId;
-
-    const renderItem = ({ item }, onDeleteClick) => (
-        <BusinessItem
-            title={item.name}
-            deleteAction={onDeleteClick}
-        />
-    );
-
     const navigateToAddBusinessForm = () => {
         navigation.navigate('AddBusinessForm');
     };
+
+    const navigateToBusinessDetails = ({ item }) => {
+        navigation.navigate('BusinessDetails', { business: item });
+    };
+
+    const keyExtractor = item => item.businessId;
+
+    const renderItem = ({ item }, onDeleteClick, onPressAction) => (
+        <TouchableOpacity onPress={onPressAction}>
+            <BusinessItem
+                title={item.name}
+                deleteAction={onDeleteClick}
+            />
+        </TouchableOpacity>
+    );
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -88,10 +94,10 @@ const BusinessesFeed = ({ navigation }) => {
                 refreshing={refreshing}
                 showsVerticalScrollIndicator={true}
                 data={data?.businesses}
-                renderItem={(values) => renderItem(values, () => { deleteItem(values) })}
+                renderItem={(values) => renderItem(values, () => { deleteItem(values) }, () => navigateToBusinessDetails(values))}
                 keyExtractor={keyExtractor}
                 onRefresh={onRefresh}
-                ListEmptyComponent={<EmptyBusinessesListPlaceholder />}
+                ListEmptyComponent={<EmptyListPlaceholder />}
             />
             <PlusButton action={navigateToAddBusinessForm} />
         </SafeAreaView>
