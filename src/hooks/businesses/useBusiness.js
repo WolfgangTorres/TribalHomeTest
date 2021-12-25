@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useAxios } from '../../src/services';
+import { useAxios } from '../../services';
 
 const fetchBusiness = async (businessId) => {
     const { data } = await useAxios({
