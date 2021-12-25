@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 
-export const EmptyBusinessesListPlaceholder = () => (
+export const EmptyListPlaceholder = ({ text = `No businesses.\nAdd some businesses` }) => (
     <View style={styles.container}>
-        <Text style={styles.text}>{'No businesses.\nAdd some businesses'}</Text>
+        <Text style={styles.text}>{text}</Text>
     </View>
 );
 
