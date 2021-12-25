@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 export const PlusButton = ({ action, size = 35, color = 'black' }) => (
