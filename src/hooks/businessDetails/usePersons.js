@@ -10,4 +10,7 @@ const fetchPersons = async (businessId) => {
     return data;
 };
 
-export const usePersons = (businessId) => useQuery('persons', () => fetchPersons(businessId));
+export const usePersons = (businessId) => useQuery(
+    ['businesses', businessId, 'persons'],
+    () => fetchPersons(businessId)
+);
