@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { StyleSheet, SafeAreaView, TextInput, View, Alert } from 'react-native';
+import { StyleSheet, SafeAreaView, TextInput, View, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { Button } from '../../../components/general';
 import { useCreateBusiness, useUpdateBusiness } from '../../../hooks/addBusinessForm';
@@ -27,12 +28,21 @@ const AddBusinessForm = ({ route, navigation }) => {
     } = updateMutation;
 
     const {
+        isLoading: deleteMutatioIsLoading,
         isSuccess: deleteMutatioIsSuccess,
         isError: deleteMutationIsError,
         error: deleteMutationError
     } = deleteMutation;
 
     const [text, onChangeText] = useState(business?.name || undefined);
+
+    const isEditable = useMemo(() => {
+        return (isLoading || deleteMutatioIsLoading || updateMutationIsLoading) ? false : true;
+    }, [isLoading, deleteMutatioIsLoading, updateMutationIsLoading]);
+
+    const inputStyle = useMemo(() => {
+        return (isLoading || deleteMutatioIsLoading || updateMutationIsLoading) ? styles.disabledInput : styles.input;
+    }, [isLoading, deleteMutatioIsLoading, updateMutationIsLoading]);
 
     const createUpdateButtonTitle = useMemo(() => {
         return business !== undefined ? 'Update business' : 'Create business';
@@ -157,26 +167,41 @@ const AddBusinessForm = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.container}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={onChangeText}
-                    value={text}
-                    placeholder='Business name'
-                />
-            </View>
-            {business !== undefined && (
-                <Button
-                    title='Delete business'
-                    backgroundColor='red'
-                    action={deleteBusiness}
-                />
-            )}
-            <Button
-                title={createUpdateButtonTitle}
-                backgroundColor='blue'
-                action={business !== undefined ? updateAction : createAction}
-            />
+            <KeyboardAwareScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
+
+                <View style={{ flex: 1 }}>
+
+                    <View style={styles.container}>
+                        <TextInput
+                            editable={isEditable}
+                            style={inputStyle}
+                            style={styles.input}
+                            onChangeText={onChangeText}
+                            value={text}
+                            placeholder='Business name'
+                            returnKeyType="done"
+                        />
+                    </View>
+                    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} >
+                        {business !== undefined && (
+                            <Button
+                                disabled={isLoading || updateMutationIsLoading || deleteMutatioIsLoading}
+                                loading={deleteMutatioIsLoading}
+                                title='Delete business'
+                                backgroundColor='red'
+                                action={deleteBusiness}
+                            />
+                        )}
+                        <Button
+                            disabled={isLoading || updateMutationIsLoading || deleteMutatioIsLoading}
+                            loading={isLoading || updateMutationIsLoading}
+                            title={createUpdateButtonTitle}
+                            backgroundColor='blue'
+                            action={business !== undefined ? updateAction : createAction}
+                        />
+                    </KeyboardAvoidingView>
+                </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };
@@ -192,6 +217,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         borderWidth: 1,
         padding: 10,
+        borderRadius: 5,
+        borderColor: 'gray',
     },
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-export const PersonItem = ({ name, role, phone, email, date }) => {
+export const PersonItem = ({ name, role, phone, email, date, editAction }) => {
 
     return (
 
@@ -15,7 +15,7 @@ export const PersonItem = ({ name, role, phone, email, date }) => {
                     size={20}
                     color='black'
                     backgroundColor='white'
-                // onPress={navigateToAddBusinessForm}
+                    onPress={editAction}
                 />
             </View>
             <Text style={styles.position}>{role}</Text>
