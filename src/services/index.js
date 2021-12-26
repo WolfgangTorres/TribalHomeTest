@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants'
 import axios from 'axios';
 

@@ -34,8 +34,14 @@ const BusinessDetails = ({ navigation, route }) => {
             phone={item?.phone}
             email={item?.email}
             date={item?.join_date}
+            editAction={() => navigateToAddPersonForm({ item }, true)}
         />
     );
+
+    const navigateToAddPersonForm = ({ item } = {}, updatePerson = false) => {
+        const params = updatePerson ? { business: business, person: item } : { business: business }
+        navigation.navigate('AddPersonForm', params);
+    };
 
     const navigateToAddBusinessForm = useCallback(() => {
         navigation.navigate('AddBusinessForm', { business: business });
@@ -97,7 +103,7 @@ const BusinessDetails = ({ navigation, route }) => {
                 ListHeaderComponent={!!data?.persons?.length ? <Text style={styles.header}>Persons</Text> : null}
                 ListEmptyComponent={<EmptyListPlaceholder text={`No persons.\nAdd persons.`} />}
             />
-            <PlusButton action={() => console.log} />
+            <PlusButton action={navigateToAddPersonForm} />
         </SafeAreaView>
     );
 }
