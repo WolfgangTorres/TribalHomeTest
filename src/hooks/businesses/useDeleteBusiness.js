@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useAxios } from '../../services';
 
+/** Deletes a business
+ * 
+ * @param {String} businessId 
+ * @returns {Object} Axios Response
+ */
 const deleteBusiness = async (businessId) => {
     const result = await useAxios({
         method: 'delete',

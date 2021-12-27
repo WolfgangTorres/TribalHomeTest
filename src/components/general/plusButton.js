@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 
 export const PlusButton = ({ action, size = 35, color = 'black' }) => (
     <View style={styles.container}>
@@ -20,3 +21,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
+PlusButton.propTypes = {
+    action: PropTypes.func.isRequired,
+    size: PropTypes.number,
+    color: PropTypes.string,
+};

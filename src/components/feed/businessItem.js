@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import PropTypes from 'prop-types';
 
 let row = [];
 let prevOpenedRow;
@@ -63,3 +64,9 @@ const styles = StyleSheet.create({
         fontSize: 24,
     }
 });
+
+BusinessItem.propTypes = {
+    title: PropTypes.string.isRequired,
+    index: PropTypes.number,
+    deleteAction: PropTypes.func.isRequired
+};
