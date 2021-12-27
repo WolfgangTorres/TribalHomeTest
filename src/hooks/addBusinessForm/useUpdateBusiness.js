@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useAxios } from '../../services';
 
+/** Updates business name
+ * 
+ * @param {String} businessId 
+ * @param {String} name 
+ * @returns {Object} Axions Response
+ */
 const updateBusiness = async (businessId, name) => {
     const result = await useAxios({
         method: 'put',
