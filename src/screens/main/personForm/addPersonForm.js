@@ -152,7 +152,7 @@ const AddPersonForm = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <KeyboardAwareScrollView style={styles.container}>
+            <KeyboardAwareScrollView enableOnAndroid={true} style={styles.container}>
                 <View>
 
                     <TextInput

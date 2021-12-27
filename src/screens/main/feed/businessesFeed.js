@@ -24,6 +24,7 @@ const BusinessesFeed = ({ navigation }) => {
     } = deleteMutation;
 
     const [refreshing, setRefreshing] = useState(false);
+    const [isSwiping, setIsSwiping] = useState(true);
 
     const navigateToAddBusinessForm = () => {
         navigation.navigate('AddBusinessForm');
@@ -33,15 +34,21 @@ const BusinessesFeed = ({ navigation }) => {
         navigation.navigate('BusinessDetails', { business: item });
     };
 
+    const updateIsSwiping = (swiping) => {
+        setIsSwiping(swiping)
+    };
+
     const keyExtractor = item => item.businessId;
 
     const renderItem = ({ item }, onDeleteClick, onPressAction) => (
-        <TouchableOpacity onPress={onPressAction}>
-            <BusinessItem
-                title={item.name}
-                deleteAction={onDeleteClick}
-            />
-        </TouchableOpacity>
+        // <TouchableOpacity onPress={onPressAction}>
+        <BusinessItem
+            title={item.name}
+            deleteAction={onDeleteClick}
+            setIsSwiping={updateIsSwiping}
+            onPressAction={onPressAction}
+        />
+        // </TouchableOpacity>
     );
 
     const onRefresh = () => {
@@ -84,6 +91,7 @@ const BusinessesFeed = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
+                scrollEnabled={!isSwiping}
                 contentContainerStyle={styles.listContentContainer}
                 style={styles.list}
                 refreshing={refreshing}

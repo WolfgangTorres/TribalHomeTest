@@ -32,13 +32,14 @@ const MainStack = () => {
             screenOptions={{
                 headerMode: 'screen',
                 headerTitleAlign: 'center',
+                gestureEnabled: true,
                 ...mainStackDefaultNavOptions,
             }}
         >
             <Stack.Screen
                 name='BusinessesFeed'
                 component={BusinessesFeed}
-                options={{ title: 'Businesses' }}
+                options={{ title: 'Businesses', gestureEnabled: true, }}
             />
             <Stack.Screen
                 name='AddBusinessForm'
