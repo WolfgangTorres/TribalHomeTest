@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { StyleSheet, SafeAreaView, TextInput, View, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { StyleSheet, SafeAreaView, TextInput, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { Button } from '../../../components/general';
 import { useCreateBusiness, useUpdateBusiness } from '../../../hooks/addBusinessForm';
 import { useDeleteBusiness } from '../../../hooks/businesses';
+import { useAlert } from '../../../hooks/utils';
 
 const AddBusinessForm = ({ route, navigation }) => {
     const business = route?.params?.business;
@@ -49,10 +50,10 @@ const AddBusinessForm = ({ route, navigation }) => {
     }, [business])
 
     const deleteBusiness = () => {
-        Alert.alert(
-            'Delete Business',
-            'Are you sure?',
-            [
+        useAlert({
+            title: 'Delete Business',
+            message: 'Are you sure?',
+            actions: [
                 {
                     text: 'Cancel',
                     style: 'cancel'
@@ -62,20 +63,14 @@ const AddBusinessForm = ({ route, navigation }) => {
                     onPress: () => deleteMutation.mutate(business?.businessId)
                 }
             ]
-        );
+        });
     };
 
     const createAction = () => {
         if (!!text) {
             createMutation.mutate(text);
         } else {
-            Alert.alert(
-                'Empty field',
-                'Please enter a name',
-                [
-                    { text: 'OK' }
-                ]
-            );
+            useAlert({ title: 'Empty field', message: 'Please enter a name' });
         }
     };
 
@@ -83,85 +78,52 @@ const AddBusinessForm = ({ route, navigation }) => {
         if (!!text) {
             updateMutation.mutate({ businessId: business?.businessId, name: text });
         } else {
-            Alert.alert(
-                'Empty field',
-                'Please enter a name',
-                [
-                    { text: 'OK' }
-                ]
-            );
+            useAlert({ title: 'Empty field', message: 'Please enter a name' });
         }
     };
 
     useEffect(() => {
         if (deleteMutationIsError) {
-            Alert.alert(
-                "Deleting Business Error",
-                `${deleteMutationError.message}`,
-                [
-                    { text: "OK" }
-                ]
-            );
+            useAlert({ title: 'Deleting Business Error', message: `${deleteMutationError.message}` });
         }
     }, [deleteMutationIsError, deleteMutationError]);
 
     useEffect(() => {
         if (updateMutationIsError) {
-            Alert.alert(
-                "Updating Business Error",
-                `${updateMutationError.message}`,
-                [
-                    { text: "OK" }
-                ]
-            );
+            useAlert({ title: 'Updating Business Error', message: `${updateMutationError.message}` });
         }
     }, [updateMutationIsError, updateMutationError]);
 
     useEffect(() => {
         if (createMutationIsError) {
-            Alert.alert(
-                'Creating Business Error',
-                `${createMutationError.message}`,
-                [
-                    { text: 'OK' }
-                ]
-            );
+            useAlert({ title: 'Creating Business Error', message: `${createMutationError.message}` });
         }
     }, [createMutationIsError, createMutationError]);
 
     useEffect(() => {
         if (deleteMutatioIsSuccess) {
-            Alert.alert(
-                'Deleting Business Success',
-                undefined,
-                [
-                    { text: 'OK', onPress: () => navigation.navigate('BusinessesFeed') }
-                ]
-            );
+            useAlert({
+                title: 'Business Deleted',
+                actions: [{ text: 'OK', onPress: () => navigation.navigate('BusinessesFeed') }]
+            });
         }
     }, [deleteMutatioIsSuccess])
 
     useEffect(() => {
         if (updateMutationIsSuccess) {
-            Alert.alert(
-                'Updating Business Success',
-                undefined,
-                [
-                    { text: 'OK', onPress: () => navigation.navigate('BusinessDetails', { business: { ...business, name: text } }) }
-                ]
-            );
+            useAlert({
+                title: 'Business Updated',
+                actions: [{ text: 'OK', onPress: () => navigation.navigate('BusinessDetails', { business: { ...business, name: text } }) }]
+            });
         }
     }, [updateMutationIsSuccess])
 
     useEffect(() => {
         if (isSuccess) {
-            Alert.alert(
-                'Creating Business Success',
-                undefined,
-                [
-                    { text: 'OK', onPress: () => navigation.goBack() }
-                ]
-            );
+            useAlert({
+                title: 'Business Created',
+                actions: [{ text: 'OK', onPress: () => navigation.goBack() }]
+            });
         }
     }, [isSuccess])
 

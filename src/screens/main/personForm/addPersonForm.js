@@ -120,7 +120,7 @@ const AddPersonForm = ({ route, navigation }) => {
     useEffect(() => {
         if (deleteMutatioIsSuccess) {
             useAlert({
-                title: 'Deleting Person Success',
+                title: 'Person Deleted',
                 actions: [
                     { text: 'OK', onPress: () => navigation.goBack() }
                 ]
@@ -131,7 +131,7 @@ const AddPersonForm = ({ route, navigation }) => {
     useEffect(() => {
         if (updateMutationIsSuccess) {
             useAlert({
-                title: 'Updating Person Success',
+                title: 'Person Updated',
                 actions: [
                     { text: 'OK', onPress: () => navigation.goBack() }
                 ]
@@ -142,7 +142,7 @@ const AddPersonForm = ({ route, navigation }) => {
     useEffect(() => {
         if (isSuccess) {
             useAlert({
-                title: 'Creating Person Success',
+                title: 'Person Created',
                 actions: [
                     { text: 'OK', onPress: () => navigation.goBack() }
                 ]

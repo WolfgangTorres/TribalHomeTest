@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
 
 import { useBusinesses, useDeleteBusiness } from '../../../hooks/businesses';
 import { BusinessItem } from '../../../components/feed';
 import { PlusButton, LoadingIndicator, ErrorPlaceholder, EmptyListPlaceholder } from '../../../components/general';
+import { useAlert } from '../../../hooks/utils';
 
 const BusinessesFeed = ({ navigation }) => {
     const deleteMutation = useDeleteBusiness();
@@ -59,13 +60,7 @@ const BusinessesFeed = ({ navigation }) => {
 
     useEffect(() => {
         if (mutationIsError) {
-            Alert.alert(
-                "Deleting Business Error",
-                `${mutationError.message}`,
-                [
-                    { text: "OK" }
-                ]
-            );
+            useAlert({ title: 'Deleting Business Error', message: `${mutationError.message}` });
         }
     }, [mutationIsError, mutationError]);
 
