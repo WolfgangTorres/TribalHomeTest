@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 
 export const PersonItem = ({ name, role, phone, email, date, editAction }) => {
 
@@ -59,3 +60,12 @@ const styles = StyleSheet.create({
         marginRight: 0,
     }
 });
+
+PersonItem.propTypes = {
+    name: PropTypes.string.isRequired,
+    role: PropTypes.string.isRequired,
+    phone: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    date: PropTypes.string,
+    editAction: PropTypes.func.isRequired
+};

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
+import PropTypes from 'prop-types';
 
 export const EmptyListPlaceholder = ({ text = `No businesses.\nAdd some businesses` }) => (
     <View style={styles.container}>
@@ -18,3 +19,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     }
 });
+
+EmptyListPlaceholder.propTypes = {
+    text: PropTypes.string
+};

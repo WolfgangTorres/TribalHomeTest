@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import PropTypes from 'prop-types';
 
 export const ErrorPlaceholder = ({ error, retryAction }) => (
     <View style={styles.container}>
@@ -26,3 +27,8 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     }
 });
+
+ErrorPlaceholder.propTypes = {
+    error: PropTypes.string.isRequired,
+    retryAction: PropTypes.func.isRequired
+};

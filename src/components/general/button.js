@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import PropTypes from 'prop-types';
 
-export const Button = ({ action, backgroundColor = 'blue', title, loading, disabled }) => (
+export const Button = ({ action, backgroundColor = 'blue', title, loading = false, disabled = false }) => (
     <TouchableOpacity
         disabled={disabled}
         style={{ ...styles.container, backgroundColor }}
@@ -27,3 +28,11 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 });
+
+Button.propTypes = {
+    action: PropTypes.func.isRequired,
+    backgroundColor: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    loading: PropTypes.bool,
+    disabled: PropTypes.bool
+};
