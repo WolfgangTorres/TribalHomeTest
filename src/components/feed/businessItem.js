@@ -65,7 +65,7 @@ export const BusinessItem = ({ title, index, deleteAction, setIsSwiping, onPress
                     renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, deleteAction, mutationIsLoading)}
                     onSwipeableOpen={() => closeRow(index)}
                     ref={(ref) => (row[index] = ref)}
-                    rightOpenValue={-100}
+                    rightOpenValue={-20}
                 >
                     <View style={styles.item}>
                         <Text style={styles.title}>{title}</Text>
