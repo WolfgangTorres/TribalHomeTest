@@ -16,7 +16,7 @@ const AddPersonForm = ({ route, navigation }) => {
     const phoneTIRef = useRef();
     const dateTIRef = useRef();
 
-    const deleteMutation = useDeletePerson(business?.businessId);
+    const deleteMutation = useDeletePerson();
     const updateMutation = useUpdatePerson(business?.businessId, person?.personId);
     const createMutation = useCreatePerson(business?.businessId);
 
@@ -71,7 +71,7 @@ const AddPersonForm = ({ route, navigation }) => {
                 },
                 {
                     text: 'Delete',
-                    onPress: () => deleteMutation.mutate(person?.personId)
+                    onPress: () => deleteMutation.mutate({ personId: person?.personId, businessId: business?.businessId })
                 }
             ]
         });
@@ -193,6 +193,7 @@ const AddPersonForm = ({ route, navigation }) => {
                         placeholder='Email'
                         returnKeyType='next'
                         keyboardType='email-address'
+                        autoCapitalize='none'
                         // blurOnSubmit={false}
                         onSubmitEditing={() => { phoneTIRef.current.focus(); }}
                     />

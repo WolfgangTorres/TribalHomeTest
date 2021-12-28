@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { default as RNGHSwipeable } from 'react-native-gesture-handler/Swipeable';
 import Swipeable from 'react-native-swipeable';
 import PropTypes from 'prop-types';
@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 let row = [];
 let prevOpenedRow;
 
-export const BusinessItem = ({ title, index, deleteAction, setIsSwiping, onPressAction }) => {
+export const BusinessItem = ({ title, index, deleteAction, setIsSwiping, onPressAction, mutationIsLoading }) => {
 
     const onSwipeStart = () => {
         setIsSwiping(true);
@@ -24,33 +24,45 @@ export const BusinessItem = ({ title, index, deleteAction, setIsSwiping, onPress
         prevOpenedRow = row[index];
     };
 
-    const renderRightActions = (progress, dragX, onClick) => {
+    const renderRightActions = (progress, dragX, onClick, mutationIsLoading) => {
         return (
             <View
                 style={styles.swipeButtonIos}
             >
-                <TouchableOpacity onPress={onClick} >
-                    <Text style={styles.swipeButtonTextIos}>Delete</Text>
-                </TouchableOpacity>
+                {mutationIsLoading
+                    ? <ActivityIndicator color="black" />
+                    : (
+                        <TouchableOpacity onPress={onClick} >
+                            <Text style={styles.swipeButtonTextIos}>Delete</Text>
+                        </TouchableOpacity>
+                    )
+                }
             </View>
         );
     };
 
-    const rightButtons = [
-        <View
-            style={styles.swipeButton}
-        >
-            <TouchableOpacity onPress={deleteAction} >
-                <Text style={styles.swipeButtonText}>Delete</Text>
-            </TouchableOpacity>
-        </View>
-    ];
+    const rightButtons = useMemo(() => {
+        return [
+            <View
+                style={styles.swipeButton}
+            >
+                {mutationIsLoading
+                    ? <ActivityIndicator color="black" />
+                    : (
+                        <TouchableOpacity onPress={deleteAction} >
+                            <Text style={styles.swipeButtonText}>Delete</Text>
+                        </TouchableOpacity>
+                    )
+                }
+            </View>
+        ]
+    }, [mutationIsLoading]);
 
     if (Platform.OS === 'ios') {
         return (
             <TouchableOpacity onPress={onPressAction}>
                 <RNGHSwipeable
-                    renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, deleteAction)}
+                    renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, deleteAction, mutationIsLoading)}
                     onSwipeableOpen={() => closeRow(index)}
                     ref={(ref) => (row[index] = ref)}
                     rightOpenValue={-100}

@@ -3,11 +3,15 @@ import { StyleSheet, LayoutAnimation, FlatList, SafeAreaView, TouchableOpacity }
 
 import { useBusinesses, useDeleteBusiness } from '../../../hooks/businesses';
 import { BusinessItem } from '../../../components/feed';
+import { usePersonsMutation } from '../../../hooks/businessDetails';
+import { useDeletePerson } from '../../../hooks/addPersonForm';
 import { PlusButton, LoadingIndicator, ErrorPlaceholder, EmptyListPlaceholder } from '../../../components/general';
 import { useAlert } from '../../../hooks/utils';
 
 const BusinessesFeed = ({ navigation }) => {
     const deleteMutation = useDeleteBusiness();
+    const deletePersonMutation = useDeletePerson();
+    const fetchPersonsMutation = usePersonsMutation();
 
     const {
         data,
@@ -19,12 +23,14 @@ const BusinessesFeed = ({ navigation }) => {
     } = useBusinesses();
 
     const {
+        isSuccess: mutationIsSuccess,
+        isLoading: mutationIsLoading,
         isError: mutationIsError,
         error: mutationError
     } = deleteMutation;
 
     const [refreshing, setRefreshing] = useState(false);
-    const [isSwiping, setIsSwiping] = useState(true);
+    const [isSwiping, setIsSwiping] = useState(false);
 
     const navigateToAddBusinessForm = () => {
         navigation.navigate('AddBusinessForm');
@@ -40,15 +46,14 @@ const BusinessesFeed = ({ navigation }) => {
 
     const keyExtractor = item => item.businessId;
 
-    const renderItem = ({ item }, onDeleteClick, onPressAction) => (
-        // <TouchableOpacity onPress={onPressAction}>
+    const renderItem = ({ item }, onDeleteClick, onPressAction, mutationIsLoading) => (
         <BusinessItem
             title={item.name}
             deleteAction={onDeleteClick}
             setIsSwiping={updateIsSwiping}
             onPressAction={onPressAction}
+            mutationIsLoading={mutationIsLoading}
         />
-        // </TouchableOpacity>
     );
 
     const onRefresh = () => {
@@ -56,9 +61,27 @@ const BusinessesFeed = ({ navigation }) => {
         refetch();
     };
 
-    const deleteItem = ({ item, index }) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        deleteMutation.mutate(item.businessId);
+    const deleteItem = async ({ item, index }) => {
+        useAlert({
+            title: 'Delete Business',
+            message: 'All business-related information, including people, will be removed. Are you sure?',
+            actions: [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => {
+                        deleteMutation.mutate({
+                            businessId: item.businessId,
+                            getPersonMutation: fetchPersonsMutation,
+                            deletePersonMutation: deletePersonMutation
+                        });
+                    }
+                }
+            ]
+        });
     };
 
     const retryAction = () => {
@@ -76,6 +99,13 @@ const BusinessesFeed = ({ navigation }) => {
             setRefreshing(false);
         }
     }, [isFetching]);
+
+    useEffect(() => {
+        if (mutationIsSuccess) {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            useAlert({ title: 'Business Deleted' });
+        }
+    }, [mutationIsSuccess]);
 
     if (isLoading) {
         return <LoadingIndicator />
@@ -97,7 +127,7 @@ const BusinessesFeed = ({ navigation }) => {
                 refreshing={refreshing}
                 showsVerticalScrollIndicator={true}
                 data={data?.businesses}
-                renderItem={(values) => renderItem(values, () => { deleteItem(values) }, () => navigateToBusinessDetails(values))}
+                renderItem={(values) => renderItem(values, () => { deleteItem(values) }, () => navigateToBusinessDetails(values), mutationIsLoading)}
                 keyExtractor={keyExtractor}
                 onRefresh={onRefresh}
                 ListEmptyComponent={<EmptyListPlaceholder />}

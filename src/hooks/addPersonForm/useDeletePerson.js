@@ -16,15 +16,16 @@ const deletePerson = async (personId, businessId) => {
     return result;
 };
 
-export const useDeletePerson = (businessId) => {
+export const useDeletePerson = () => {
     const queryClient = useQueryClient();
 
     return useMutation(
-        (personId) => deletePerson(personId, businessId),
+        ({ personId, businessId }) => deletePerson(personId, businessId),
         {
             onSuccess: (data, variables, context) => {
-                queryClient.setQueryData(['businesses', businessId, 'persons'], ({ persons }) => {
-                    return { persons: persons?.filter(person => person.personId !== variables) };
+                queryClient.setQueryData(['businesses', variables.businessId, 'persons'], (values) => {
+                    const { persons } = values || {};
+                    return { persons: persons?.filter(person => person.personId !== variables.personId) };
                 });
             },
         }

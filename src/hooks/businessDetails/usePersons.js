@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useAxios } from '../../services';
 
 /** Gets persons from a business
@@ -13,6 +13,10 @@ const fetchPersons = async (businessId) => {
     });
 
     return data;
+};
+
+export const usePersonsMutation = () => {
+    return useMutation((businessId) => fetchPersons(businessId))
 };
 
 export const usePersons = (businessId) => useQuery(
