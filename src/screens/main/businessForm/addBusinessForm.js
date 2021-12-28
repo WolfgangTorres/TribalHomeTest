@@ -4,12 +4,16 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { Button } from '../../../components/general';
 import { useCreateBusiness, useUpdateBusiness } from '../../../hooks/addBusinessForm';
+import { usePersonsMutation } from '../../../hooks/businessDetails';
+import { useDeletePerson } from '../../../hooks/addPersonForm';
 import { useDeleteBusiness } from '../../../hooks/businesses';
 import { useAlert } from '../../../hooks/utils';
 
 const AddBusinessForm = ({ route, navigation }) => {
     const business = route?.params?.business;
 
+    const deletePersonMutation = useDeletePerson();
+    const fetchPersonsMutation = usePersonsMutation();
     const deleteMutation = useDeleteBusiness();
     const updateMutation = useUpdateBusiness();
     const createMutation = useCreateBusiness();
@@ -49,10 +53,18 @@ const AddBusinessForm = ({ route, navigation }) => {
         return business !== undefined ? 'Update business' : 'Create business';
     }, [business])
 
+    const onDeleteAction = async () => {
+        deleteMutation.mutate({
+            businessId: business?.businessId,
+            getPersonMutation: fetchPersonsMutation,
+            deletePersonMutation: deletePersonMutation
+        });
+    };
+
     const deleteBusiness = () => {
         useAlert({
             title: 'Delete Business',
-            message: 'Are you sure?',
+            message: 'All business-related information, including people, will be removed. Are you sure?',
             actions: [
                 {
                     text: 'Cancel',
@@ -60,7 +72,7 @@ const AddBusinessForm = ({ route, navigation }) => {
                 },
                 {
                     text: 'Delete',
-                    onPress: () => deleteMutation.mutate(business?.businessId)
+                    onPress: onDeleteAction
                 }
             ]
         });
